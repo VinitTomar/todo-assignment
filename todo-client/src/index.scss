@@ -1,0 +1,15 @@
+// Override default variables before the import
+$body-bg: rgb(40 44 52);
+$btn-link-color: #599cff;
+$btn-link-hover-color: #4890fb;
+
+// Import Bootstrap and its default variables
+@import '~bootstrap/scss/bootstrap.scss';
+
+* {
+  color: white
+}
+
+body {
+  margin: 10px;
+}

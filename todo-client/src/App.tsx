@@ -1,11 +1,41 @@
-import React from 'react';
-import logo from './logo.svg';
+import { Navbar, Container, Nav, Button } from 'react-bootstrap';
+import { BrowserRouter, Routes, Route, Outlet, Link } from 'react-router-dom';
 import './App.scss';
-import List from './list/List';
+import Create from './components/create/Create';
+import DetailsPage from './components/detail/Detail';
+import List from './components/list/List';
 
 function App() {
+  document.title = 'Todo list';
   return (
-    <List />
+    <>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Container>
+            <Navbar expand="lg" variant="dark" bg="dark">
+              <Container>
+                <Navbar.Brand>
+                  <Link to="/">Todo App</Link>
+                </Navbar.Brand>
+                <Nav>
+                  <Nav.Item className="justify-content-end">
+                    <Link to="/create">
+                      <Button variant="primary">New</Button>
+                    </Link>
+                  </Nav.Item>
+                </Nav>
+              </Container>
+            </Navbar>
+            <Outlet />
+          </Container>}>
+            <Route index element={<List />} />
+            <Route path="create" element={<Create />} />
+            <Route path="todos/:id" element={<DetailsPage />} />
+            <Route path="*" element={<div> Not found</div>} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </>
   );
 }
 
