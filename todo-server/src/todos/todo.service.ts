@@ -32,4 +32,8 @@ export class TodoService {
     return this._todoModel.create(todo);
   }
 
+  deleteTodo(id: string) {
+    return this._todoModel.destroy({ where: { id } });
+  }
+
 }

@@ -25,7 +25,7 @@ export class Todo extends Model {
   @IsNotEmpty()
   @MinLength(5)
   @MaxLength(255)
-  descrption: string;
+  description: string;
 
   @Column
   @IsDateString({

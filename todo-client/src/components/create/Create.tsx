@@ -2,8 +2,8 @@ import { useState } from "react";
 import { Button, Card, Container, Form } from "react-bootstrap";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { addTodo } from "../../actions/todo-action";
 import { Todo, TodoPriority } from "../../models/todo.model";
+import { addTodoAsync } from "../../redux/todo-slice";
 import './Create.scss';
 
 export default function () {
@@ -70,8 +70,8 @@ export default function () {
             </Form.Group>
             <Button variant="success" type="button"
               onClick={() => {
+                submitForm(addTodoAsync(todoForm));
                 nav('/');
-                submitForm(addTodo(todoForm));
               }}
             >
               Submit

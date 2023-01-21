@@ -1,19 +1,14 @@
 import { Button } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { deleteTodo } from "../../actions/todo-action";
 import { Todo } from "../../models/todo.model";
+import { deleteTodoAsync } from "../../redux/todo-slice";
 
 export default function () {
-
+  const dispatch = useDispatch();
   const { id } = useParams();
   const nav = useNavigate();
-
-  const list = useSelector(
-    (state: { todoReducer: { todos: Todo[]; }; }) => state?.todoReducer.todos
-  );
-
-  const dispatchDeleteTodo = useDispatch();
+  const list = useSelector((state: { todos: Todo[] }) => state.todos);
 
   const {
     id: todoId,
@@ -39,7 +34,7 @@ export default function () {
 
       <Button variant="danger" size="sm"
         onClick={() => {
-          dispatchDeleteTodo(deleteTodo(todoId || -1));
+          dispatch(deleteTodoAsync({ id: todoId || -1 }));
           nav('/');
         }}
       >Delete</Button>
