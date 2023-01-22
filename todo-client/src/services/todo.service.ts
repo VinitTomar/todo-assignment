@@ -7,13 +7,20 @@ export const fetchAllTodo = () => {
     .then(res => res.json());
 }
 
+export const sortTodos = (sortBy: string, sortType: string) => {
+  return fetch(`${baseUrl}?` + new URLSearchParams({
+    sortBy,
+    sortType
+  })).then(res => res.json());
+}
+
 export const sendTodo = (todo: Todo) => {
   return fetch(baseUrl, {
     method: 'POST',
     headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(todo),
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(todo),
   }).then(res => res.json());
 }
 

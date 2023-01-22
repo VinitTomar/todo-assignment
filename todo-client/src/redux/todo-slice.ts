@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { Todo } from "../models/todo.model";
-import { fetchAllTodo, deleteTodo as deleteTodoApi, sendTodo } from "../services/todo.service";
+import { fetchAllTodo, deleteTodo as deleteTodoApi, sendTodo, sortTodos } from "../services/todo.service";
 
 
 export const getTodosAsync = createAsyncThunk(
@@ -9,6 +9,13 @@ export const getTodosAsync = createAsyncThunk(
     return fetchAllTodo();
   }
 );
+
+export const sortTodosAsync = createAsyncThunk(
+  'todos/sortTodosAsync',
+  async ({ sortBy, sortType }: { sortBy: string, sortType: string }) => {
+    return sortTodos(sortBy, sortType);
+  }
+)
 
 export const addTodoAsync = createAsyncThunk(
   'todos/addTodoAsync',
@@ -38,7 +45,14 @@ export const todoSlice = createSlice({
   extraReducers: {
     [getTodosAsync.fulfilled.toString()]: (_: any, action: { payload: Todo[]; }) => {
       return action.payload.map(item => {
-        item.createdAt = new Date(item?.createdAt?.toString());
+        item.createdAt = new Date(item?.createdAt?.toString() || '');
+        item.dueDate = new Date(item.dueDate.toString());
+        return item;
+      });
+    },
+    [sortTodosAsync.fulfilled.toString()]: (_: any, action: { payload: Todo[] }) => {
+      return action.payload.map(item => {
+        item.createdAt = new Date(item?.createdAt?.toString() || '');
         item.dueDate = new Date(item.dueDate.toString());
         return item;
       });
@@ -46,7 +60,7 @@ export const todoSlice = createSlice({
     [addTodoAsync.fulfilled.toString()]: (state: Todo[], action: { payload: Todo }) => {
       const { payload: todo } = action;
       todo.dueDate = new Date(todo.dueDate.toString());
-      todo.createdAt = new Date(todo?.createdAt?.toString());
+      todo.createdAt = new Date(todo?.createdAt?.toString() || '');
       return [...state, todo];
     },
     [deleteTodoAsync.fulfilled.toString()]: (state: Todo[], action: { payload: { id: number } }) => {
