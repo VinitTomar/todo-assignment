@@ -6,6 +6,7 @@ import { addTodoAsync } from "../../redux/todo-slice";
 import * as yup from 'yup';
 import { Formik } from 'formik';
 import './Create.scss';
+import { useState } from "react";
 
 const schema = yup.object().shape({
   title: yup.string().required().min(3).max(50),
@@ -29,17 +30,19 @@ const initialTodoFormState = {
 const Create = () => {
   const submitForm = useDispatch();
   const nav = useNavigate();
+  const [isLoading, setLoading] = useState(false);
 
   return (
     <Formik
       validationSchema={schema}
       onSubmit={(data) => {
-        console.log({ data })
+        setLoading(true);
         submitForm(addTodoAsync({
           ...data,
           dueDate: new Date(data.dueDate)
-        }));
-        nav('/todos');
+        })).then(() => {
+          nav('/todos');
+        });
       }}
       initialValues={initialTodoFormState}>
       {({
@@ -117,8 +120,8 @@ const Create = () => {
                     onChange={handleChange}
                   />)}
                 </Form.Group>
-                <Button variant="success" type="submit">
-                  Submit
+                <Button variant="success" type="submit" disabled={isLoading}>
+                  {isLoading ? 'Submiting...' : 'Submit'}
                 </Button>
               </Card.Body>
             </Card>

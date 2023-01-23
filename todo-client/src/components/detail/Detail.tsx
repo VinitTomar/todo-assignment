@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Button, ListGroup } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
@@ -6,7 +6,10 @@ import { Todo } from "../../models/todo.model";
 import { deleteTodoAsync, getTodosAsync } from "../../redux/todo-slice";
 import './Detail.scss';
 
+let item: Todo;
+
 const Detail = () => {
+  const [isDeleting, setDeleting] = useState(false);
   const dispatch = useDispatch();
   const { id } = useParams();
   const nav = useNavigate();
@@ -18,6 +21,7 @@ const Detail = () => {
   let elmToDraw = <div>Loading...</div>;
 
   if (list.length) {
+    item = list.filter(todo => todo.id?.toString() === id?.toString())[0] || item;
     const {
       id: todoId,
       title,
@@ -25,11 +29,14 @@ const Detail = () => {
       priority,
       dueDate,
       createdAt,
-    } = list.filter(todo => todo.id?.toString() === id?.toString())[0];
+    } = item;
+
+    if (id?.toString() !== todoId?.toString()) {
+      nav('not-found');
+    }
 
     elmToDraw = (
-      <div className="container border badge border-dark mt-80 bg-dark bg-opacity-50 text-start p-4">
-
+      <>
         <h1 className="display-4">{title}</h1>
         <p className="lead">{description}</p>
 
@@ -52,17 +59,26 @@ const Detail = () => {
 
         <hr className="my-4" />
 
-        <Button variant="danger" size="sm"
+        <Button
+          variant="danger"
+          size="sm"
+          disabled={isDeleting}
           onClick={() => {
-            dispatch(deleteTodoAsync({ id: todoId || -1 }));
-            nav('/todos');
+            setDeleting(true);
+            dispatch(deleteTodoAsync({ id: todoId || -1 })).then(() => {
+              nav('/todos');
+            });
           }}
-        >Delete</Button>
-      </div>
+        >{isDeleting ? 'Deleting...' : 'Delete'}</Button>
+      </>
     )
   }
 
-  return elmToDraw;
+  return (
+    <div className="container border badge border-dark mt-80 bg-dark bg-opacity-50 text-start p-4"> {elmToDraw}
+    </div>
+  )
+
 }
 
 export default Detail;
