@@ -1,37 +1,50 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Button, Card, Container, Form, Table } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { Todo } from "../../models/todo.model";
 import { deleteTodoAsync, getTodosAsync, sortTodosAsync } from "../../redux/todo-slice";
 import './List.scss';
+import FuzzySearch from 'fuzzy-search';
 import type { } from 'redux-thunk/extend-redux'
+
+
+const searcher = new FuzzySearch<Todo>([], ['title', 'description'], {
+  caseSensitive: false,
+});
 
 const List = () => {
   const dispatch = useDispatch();
+  const [searchText, setSearchText] = useState('');
   const list = useSelector((state: { todos: Todo[] }) => state.todos);
   useEffect(() => {
     dispatch(getTodosAsync());
   }, [dispatch]);
 
-  const tableRows = list.map(({ id, title, priority, dueDate, createdAt }) => {
-    return <tr key={id}>
-      <td>{id}</td>
-      <td>
-        <Link to={`/todos/${id}`}>
-          <Button variant="link">{title}</Button>
-        </Link>
-      </td>
-      <td className="text-capitalize">{priority}</td>
-      <td>{dueDate.toDateString()}</td>
-      <td>{createdAt?.toDateString()}</td>
-      <td>
-        <Button variant="danger" size="sm"
-          onClick={() => dispatch(deleteTodoAsync({ id: id || -1 }))}
-        >Delete</Button>
-      </td>
-    </tr >
-  });
+  const getSearchResult = () => {
+    searcher.haystack = list;
+    return searcher.search(searchText);
+  }
+
+  const tableRows = (searchText ? getSearchResult() : list)
+    .map(({ id, title, priority, dueDate, createdAt }) => {
+      return <tr key={id}>
+        <td>{id}</td>
+        <td>
+          <Link to={`/todos/${id}`}>
+            <Button variant="link">{title}</Button>
+          </Link>
+        </td>
+        <td className="text-capitalize">{priority}</td>
+        <td>{dueDate.toDateString()}</td>
+        <td>{createdAt?.toDateString()}</td>
+        <td>
+          <Button variant="danger" size="sm"
+            onClick={() => dispatch(deleteTodoAsync({ id: id || -1 }))}
+          >Delete</Button>
+        </td>
+      </tr >
+    });
 
   let sortBy = 'createdAt';
   let orderBy = 'ASC';
@@ -49,6 +62,11 @@ const List = () => {
       >
         <Card.Header>
           <div className="sort-wrapper">
+            <Form.Control type="text"
+              placeholder="search todo"
+              value={searchText}
+              onChange={(event) => setSearchText(event.target.value)}
+            />
             <span className='select-label'>Sort by:</span>
             <Form.Select
               className='text-capitalize'
