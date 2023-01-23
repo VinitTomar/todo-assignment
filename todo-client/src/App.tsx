@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Outlet, Link } from 'react-router-dom';
 import './App.scss';
 import Create from './components/create/Create';
 import DetailsPage from './components/detail/Detail';
+import Home from './components/home/home';
 import List from './components/list/List';
 
 function App() {
@@ -19,7 +20,7 @@ function App() {
                 </Navbar.Brand>
                 <Nav>
                   <Nav.Item className="justify-content-end">
-                    <Link to="/create">
+                    <Link to="/todos/create">
                       <Button variant="primary">New</Button>
                     </Link>
                   </Nav.Item>
@@ -28,8 +29,9 @@ function App() {
             </Navbar>
             <Outlet />
           </Container>}>
-            <Route index element={<List />} />
-            <Route path="create" element={<Create />} />
+            <Route index element={<Home />} />
+            <Route path="todos" element={<List />} />
+            <Route path="todos/create" element={<Create />} />
             <Route path="todos/:id" element={<DetailsPage />} />
             <Route path="*" element={<div> Not found</div>} />
           </Route>

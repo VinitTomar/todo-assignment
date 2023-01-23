@@ -55,7 +55,7 @@ const Detail = () => {
         <Button variant="danger" size="sm"
           onClick={() => {
             dispatch(deleteTodoAsync({ id: todoId || -1 }));
-            nav('/');
+            nav('/todos');
           }}
         >Delete</Button>
       </div>

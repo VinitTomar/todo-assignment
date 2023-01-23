@@ -39,7 +39,7 @@ const Create = () => {
           ...data,
           dueDate: new Date(data.dueDate)
         }));
-        nav('/');
+        nav('/todos');
       }}
       initialValues={initialTodoFormState}>
       {({
